@@ -118,5 +118,7 @@ Held payouts counted or not (KPI 3 and 4). **Open until a real client answers.**
 ## O-003 Default model
 Chosen by measurement in Phase 5: the cheapest tool-capable model whose verdicts hold, whose output the verifier accepts, and that repeats across 5 runs. **Open until Phase 5.**
 
-## O-004 License
-The repo is meant to be public. A license must be chosen before it is. **Open: owner's decision.**
+## D-024 License: MIT
+**Decision:** MIT, copyright 2026 Sundar Nalli, chosen by the owner before publishing.
+**Why:** The repo is a public learning project; MIT is short and permissive. It covers the code and the synthetic data. It is not a warranty that anything here suits real payments (see `docs/client/what-this-does-not-prove.md`).
+**Status:** decided. Closes the former open item O-004.

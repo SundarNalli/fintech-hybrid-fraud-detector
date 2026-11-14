@@ -67,3 +67,7 @@ Each folder has its own short README.
 ## Keys and secrets
 
 No key ever goes in the repo or the UI. `.env` is git-ignored, and a pre-commit hook scans for secrets (`pre-commit install`, then it runs on every commit).
+
+## License
+
+[MIT](LICENSE). Everything here is synthetic and a practice scenario; it is not production fraud software.
