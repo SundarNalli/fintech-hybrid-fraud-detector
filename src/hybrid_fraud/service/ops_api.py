@@ -43,13 +43,13 @@ def demo_cases(ds: Dataset) -> dict[str, list]:
     """For each kind, the first matching payout plus that merchant's earlier payouts from the same 24 hours,
     in order, so the velocity counters see the same story the rules were built for."""
     truth = {l.payout_id: l for l in ds.labels}
-    by_merchant: dict[str, list] = {}
-    for p in ds.payouts:
-        by_merchant.setdefault(p.merchant_id, []).append(p)
-
-    def story(target) -> list:
+    def story(target, kind=None) -> list:
+        """The merchant's last 24 hours. A mule ring is many merchants paying one payee, so for that
+        kind the payee's payouts from other merchants come too."""
         lo = target.created_at - timedelta(hours=24)
-        return [p for p in by_merchant[target.merchant_id] if lo < p.created_at <= target.created_at]
+        return [p for p in ds.payouts if lo < p.created_at <= target.created_at
+                and (p.merchant_id == target.merchant_id
+                     or (kind == "mule" and p.beneficiary_id == target.beneficiary_id))]
 
     # A rules-only replay tells us which fraud the rules act on, so each story shows the system working.
     routes = {p.payout_id: row.result.route for p, row in zip(ds.payouts, _replay_cached(ds))}
@@ -59,7 +59,7 @@ def demo_cases(ds: Dataset) -> dict[str, list]:
         if not label.is_fraud:
             continue
         if routes[p.payout_id] != Route.APPROVE and label.fraud_type not in cases:
-            cases[label.fraud_type] = story(p)
+            cases[label.fraud_type] = story(p, label.fraud_type)
         if routes[p.payout_id] == Route.APPROVE and "missed" not in cases:
             cases["missed"] = story(p)  # shown on purpose: the rules let this fraud through
     ordinary = next(p for p in ds.payouts if not truth[p.payout_id].is_fraud and p.amount_usd > 1000)

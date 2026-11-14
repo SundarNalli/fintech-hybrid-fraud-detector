@@ -6,7 +6,7 @@ A fast rules path decides the obvious payouts. A slow, checked AI path looks at 
 
 ## Status
 
-**Phases 0 to 6 are built and wired together:** the synthetic data, the rules-only hot path, the payout service with its hold lifecycle and append-only ledger, the agent, the verifier and policy wrapper, and an evaluation harness. **No real model has been run yet.** The evaluation so far used a scripted stand-in, so it checks the pipeline and the guard, not how good a model is. Read [docs/results-memo.md](docs/results-memo.md) first. A read-only ops screen is built (`make serve`, then open http://127.0.0.1:8000/). See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
+**Phases 0 to 7 are built and wired together:** the synthetic data, the rules-only hot path, the payout service with its hold lifecycle and append-only ledger, the agent, the verifier and policy wrapper, and an evaluation harness. **No real model has been run yet.** The evaluation so far used a scripted stand-in, so it checks the pipeline and the guard, not how good a model is. Read [docs/results-memo.md](docs/results-memo.md) first. A read-only ops screen is built (`make serve`, then open http://127.0.0.1:8000/). See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
 
 Try the rules-only replay (Python 3.12, `pip install -e ".[dev]"`):
 
@@ -49,6 +49,10 @@ payout event --> HOT PATH (rules, target p99 < 150 ms)
 
 Each folder has its own short README.
 
+## For a client conversation
+
+[Demo script](docs/client/demo-script.md), [pilot proposal](docs/client/pilot-proposal.md), [risk register](docs/client/risk-register.md) and [what this prototype does not prove](docs/client/what-this-does-not-prove.md).
+
 ## Reading order
 
 1. [docs/problem-restated.md](docs/problem-restated.md)
@@ -58,7 +62,7 @@ Each folder has its own short README.
 
 ## Running it
 
-Not yet. When the demo exists, `make demo` will run the whole flow with no API key, using recorded responses. Live mode will need your own key, set in an untracked `.env` (see `.env.example`).
+`make demo` starts the service with no API key (replay mode: held payouts fail safe to the human queue; no model runs). Live mode will need your own key, set in an untracked `.env` (see `.env.example`).
 
 ## Keys and secrets
 
