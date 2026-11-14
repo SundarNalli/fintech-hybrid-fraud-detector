@@ -1,0 +1,17 @@
+{
+ "responses": [
+  {
+   "tool_calls": [
+    {
+     "id": "c9",
+     "name": "submit_recommendation",
+     "arguments": "{\"action\": \"APPROVE\", \"reason_codes\": ["
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  }
+ ]
+}

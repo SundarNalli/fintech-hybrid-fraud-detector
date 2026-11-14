@@ -1,0 +1,44 @@
+{
+ "responses": [
+  {
+   "tool_calls": [
+    {
+     "id": "c0",
+     "name": "beneficiary_history",
+     "arguments": {}
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  },
+  {
+   "tool_calls": [
+    {
+     "id": "c9",
+     "name": "submit_recommendation",
+     "arguments": {
+      "action": "BLOCK",
+      "reason_codes": [
+       "mule_beneficiary"
+      ],
+      "claims": [
+       {
+        "field": "on_mule_list",
+        "op": "eq",
+        "value": true,
+        "evidence_id": "beneficiary_history:b_1",
+        "kind": "hard_signal"
+       }
+      ]
+     }
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  }
+ ]
+}

@@ -1,0 +1,79 @@
+{
+ "responses": [
+  {
+   "tool_calls": [
+    {
+     "id": "c0",
+     "name": "merchant_profile",
+     "arguments": {}
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  },
+  {
+   "tool_calls": [
+    {
+     "id": "c1",
+     "name": "entity_graph",
+     "arguments": {}
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  },
+  {
+   "tool_calls": [
+    {
+     "id": "c2",
+     "name": "beneficiary_history",
+     "arguments": {}
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  },
+  {
+   "tool_calls": [
+    {
+     "id": "c9",
+     "name": "submit_recommendation",
+     "arguments": {
+      "action": "APPROVE",
+      "reason_codes": [
+       "established_merchant",
+       "clean_graph"
+      ],
+      "claims": [
+       {
+        "field": "account_age_days",
+        "op": "gte",
+        "value": 400,
+        "evidence_id": "merchant_profile:m_1",
+        "kind": "positive"
+       },
+       {
+        "field": "graph_clean",
+        "op": "eq",
+        "value": true,
+        "evidence_id": "entity_graph:m_1",
+        "kind": "positive"
+       }
+      ],
+      "narrative": "Old account, clean graph."
+     }
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  }
+ ]
+}
