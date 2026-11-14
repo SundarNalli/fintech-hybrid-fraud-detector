@@ -6,7 +6,8 @@ Every number carries a tag:
 - **DISCOVERY** from the simulated client call (confirm with a real client before relying on it)
 - **DESIGN** chosen in the build plan
 - **INVENTED** a placeholder, to be replaced by evidence
-- **DERIVED** arithmetic on other rows
+- **DERIVED** arithmetic on other rows, or measured on the synthetic set
+- **POC** (in `config/thresholds.toml`) taken from the earlier rules-only proof of concept, unfitted
 
 | # | Item | Value | Tag | Note |
 |---|---|---|---|---|
@@ -35,5 +36,15 @@ Every number carries a tag:
 | A-23 | Synthetic population size | 20,000 payouts | DESIGN | Matches the earlier rules test |
 | A-24 | Synthetic fraud shape | all except the 48 bps rate | INVENTED | Every effect size depends on the generator |
 | A-25 | Gray-zone labelled cases | about 80 | DESIGN | Wide confidence intervals; report them |
+
+| A-26 | The four scenarios | defined from project notes | INVENTED | The brief is not in the repo. Replace if the real brief differs (D-013) |
+| A-27 | "Novel anomaly" definition | payee unseen on platform for 168 h | INVENTED | D-012 |
+| A-28 | Structuring rule | 3+ payouts and $5,000+ in 1 h, over 2x daily volume | INVENTED | Twice the $2,500 line; closes the loophole |
+| A-29 | Mule rule | 4+ merchants in 24 h, payee under 168 h old | INVENTED | |
+| A-30 | Gate 0 and Gate 1 weights from the earlier test | see `config/thresholds.toml`, `hot_path/scoring.py` | INVENTED | Unfitted judgements. Two added weights (24 h dollars, new payee fed by 3+) are new |
+| A-31 | Generator noise | 0.35 | INVENTED | Each fraud signal looks innocent with probability 0.175 |
+| A-32 | Fraud shares | 55 bust-out, 25 takeover, 8 mule, 8 structuring | INVENTED | Only the 96-payout total (48 bps by count) comes from the brief |
+| A-33 | Fraud loss by dollars in the synthetic set | about 29 bps | DERIVED | Below 48 because fraud payouts here are smaller than the legitimate average. The manifest records it |
+| A-34 | Legitimate-payout friction | about 0.02% blocked, 0.2% held | DERIVED | Far below the earlier test's 1.87% blocked. A property of this generator; real friction is unknown |
 
 Rows move from INVENTED to evidence as phases finish. When a value changes, add a line to the decision log.

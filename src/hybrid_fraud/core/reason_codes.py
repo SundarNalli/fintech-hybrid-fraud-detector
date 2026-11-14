@@ -1,0 +1,23 @@
+"""Reason codes the hot path can give. Each one maps to a templated evidence line.
+
+Other folders (guard, agent) keep their own codes for now and are merged here later.
+"""
+
+from enum import StrEnum
+
+
+class ReasonCode(StrEnum):
+    # Gate 0: hard rules
+    NEW_ACCOUNT_NEW_PAYEE_LARGE = "NEW_ACCOUNT_NEW_PAYEE_LARGE"
+    DEVICE_SHARED_ACROSS_MERCHANTS = "DEVICE_SHARED_ACROSS_MERCHANTS"
+    AMOUNT_MULTIPLE_OF_HISTORY = "AMOUNT_MULTIPLE_OF_HISTORY"
+    DOLLAR_VELOCITY_STRUCTURING = "DOLLAR_VELOCITY_STRUCTURING"
+    BENEFICIARY_FED_BY_MANY_MERCHANTS = "BENEFICIARY_FED_BY_MANY_MERCHANTS"
+    BENEFICIARY_ON_MULE_LIST = "BENEFICIARY_ON_MULE_LIST"
+    # Gate 1: score
+    HIGH_RISK_SCORE = "HIGH_RISK_SCORE"
+    GRAY_ZONE_SCORE = "GRAY_ZONE_SCORE"
+    LOW_RISK_SCORE = "LOW_RISK_SCORE"
+    NOVEL_ANOMALY_LARGE = "NOVEL_ANOMALY_LARGE"
+    # Routing
+    TOP_MERCHANT_FAST_LANE = "TOP_MERCHANT_FAST_LANE"

@@ -1,0 +1,19 @@
+{
+  "synthetic": true,
+  "seed": 20261114,
+  "noise": 0.35,
+  "generator_version": "1",
+  "payouts": 20000,
+  "fraud_payouts": 96,
+  "fraud_bps_by_count": 48.0,
+  "fraud_bps_by_dollars": 29.14,
+  "sha256_uncompressed": {
+    "merchants": "95070ae6f87863e9557c2296a225d404fbc744844f2a07ee0a61a02befd7efc3",
+    "beneficiaries": "afef36fe83a2fd3c1ff98a049f728785f4d696cd1f3b71b8f55cbdfea8158f8b",
+    "beneficiary_links": "644d2c55963a55919320b9d6389c4c68b7c95e37e45a0f12af02c476a317d020",
+    "device_links": "6102eec8c4641772ae012d6713683501e5048c661f2fbe018c8652ad6312fb66",
+    "tickets": "d2e261d447c1b6049b657165232fb817905f90157d2e818614b698162be5d6ae",
+    "payouts": "506d3ac175046cc18e203c7bd570125254dd1be14f4c46518521144ddacba963",
+    "labels": "d679315f923d095ac6a5d3ef372c7cb305e0ba62bfe626101ec7aee9d109da44"
+  }
+}

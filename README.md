@@ -6,7 +6,14 @@ A fast rules path decides the obvious payouts. A slow, checked AI path looks at 
 
 ## Status
 
-**Phase 0 (decisions and assumptions) is done. Nothing is built yet.** Phases 1 onward add code. See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
+**Phases 0 and 1 are done:** decisions and assumptions, the synthetic data, and the rules-only hot path with routing. The service, agent, verifier, evaluation and UI are not built yet. See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
+
+Try the rules-only replay (Python 3.12, `pip install -e ".[dev]"`):
+
+```bash
+python -m hybrid_fraud.sim.replay
+python -m pytest -q
+```
 
 ## How it will work
 

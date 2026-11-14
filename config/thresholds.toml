@@ -9,6 +9,22 @@ approve_below = 0.45              # BRIEF
 block_at_or_above = 0.82          # BRIEF
 novel_anomaly_hold_over_usd = 2500  # BRIEF
 
+# Gate 0 hard rules. POC values come from the earlier rules-only proof of
+# concept and are unfitted. Each rule is narrow: a coincidence of facts, not one fact.
+[gate0]
+large_amount_usd = 2500                 # BRIEF
+new_account_days = 30                   # POC
+young_account_days = 90                 # POC
+new_payee_hours = 6                     # POC
+shared_device_min_merchants = 5         # POC
+amount_multiple_of_daily_volume = 8     # POC
+structuring_usd_1h = 5000               # INVENTED: twice the $2,500 line, so three payouts just under it trip the rule
+structuring_min_count_1h = 3            # INVENTED
+structuring_multiple_of_daily_volume = 2  # INVENTED
+mule_beneficiary_min_merchants_24h = 4  # INVENTED
+mule_beneficiary_max_platform_age_hours = 168  # INVENTED
+novel_payee_platform_age_hours = 168    # INVENTED (a payee nobody on the platform has paid before this week)
+
 [routing]
 top_merchant_count = 200          # BRIEF (the "top-200" merchants go to the fast human lane)
 

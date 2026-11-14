@@ -20,6 +20,21 @@ class Gate1(_Section):
     novel_anomaly_hold_over_usd: float
 
 
+class Gate0(_Section):
+    large_amount_usd: float
+    new_account_days: float
+    young_account_days: float
+    new_payee_hours: float
+    shared_device_min_merchants: int
+    amount_multiple_of_daily_volume: float
+    structuring_usd_1h: float
+    structuring_min_count_1h: int
+    structuring_multiple_of_daily_volume: float
+    mule_beneficiary_min_merchants_24h: int
+    mule_beneficiary_max_platform_age_hours: float
+    novel_payee_platform_age_hours: float
+
+
 class Routing(_Section):
     top_merchant_count: int
 
@@ -47,6 +62,7 @@ class LatencyTargets(_Section):
 
 
 class Thresholds(_Section):
+    gate0: Gate0
     gate1: Gate1
     routing: Routing
     agent: Agent
