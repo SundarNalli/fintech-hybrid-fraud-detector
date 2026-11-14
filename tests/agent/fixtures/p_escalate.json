@@ -1,0 +1,35 @@
+{
+ "responses": [
+  {
+   "tool_calls": [
+    {
+     "id": "c0",
+     "name": "merchant_profile",
+     "arguments": {}
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  },
+  {
+   "tool_calls": [
+    {
+     "id": "c9",
+     "name": "submit_recommendation",
+     "arguments": {
+      "action": "ESCALATE_HUMAN",
+      "reason_codes": [
+       "thin_evidence"
+      ]
+     }
+    }
+   ],
+   "usage": {
+    "prompt_tokens": 1000,
+    "completion_tokens": 100
+   }
+  }
+ ]
+}
