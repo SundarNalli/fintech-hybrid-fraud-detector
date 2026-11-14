@@ -11,6 +11,7 @@ from hybrid_fraud.audit.ledger import LedgerRow
 from hybrid_fraud.audit.states import IllegalTransition
 from hybrid_fraud.core.schemas import Payout, PayoutState
 from hybrid_fraud.service.gray_zone import GrayZoneProcessor
+from hybrid_fraud.service.ops_api import ops_router
 from hybrid_fraud.service.payout_service import (
     IdempotencyConflict, PayoutNotFound, PayoutResponse, PayoutService, PayoutStatus,
 )
@@ -18,7 +19,7 @@ from hybrid_fraud.store.sqlite_lookup import UnknownMerchant
 
 
 def create_app(service: PayoutService, reap_interval: float = 1.0,
-               gray_zone: GrayZoneProcessor | None = None) -> FastAPI:
+               gray_zone: GrayZoneProcessor | None = None, dataset=None, mode: str = "replay") -> FastAPI:
     """With a `gray_zone` processor, a held payout is handed to the agent after the response goes out.
     Without one, a hold waits for `resolve()` or the reaper."""
     @asynccontextmanager
@@ -68,4 +69,5 @@ def create_app(service: PayoutService, reap_interval: float = 1.0,
         ok, bad = service.verify_ledger()
         return {"chain_ok": ok, "first_bad_seq": bad, "rows": [r.__dict__ for r in rows]}
 
+    app.include_router(ops_router(service, dataset, gray_zone, mode))  # the ops screen at /
     return app

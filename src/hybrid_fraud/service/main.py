@@ -51,4 +51,7 @@ if __name__ == "__main__":
     service = build_service(db_path)
     provider = make_provider(Path(os.environ.get("FRAUD_REPLAY_DIR", DEFAULT_REPLAY)))
     gray = GrayZoneProcessor(service, db_path, provider, load_thresholds(), prices_from_env())
-    uvicorn.run(create_app(service, gray_zone=gray), host="127.0.0.1", port=8000)
+    mode = "live" if os.environ.get("OPENROUTER_API_KEY") or os.environ.get("LLM_API_KEY") else "replay"
+    app = create_app(service, gray_zone=gray, dataset=read_dataset(), mode=mode)
+    print("Ops screen: http://127.0.0.1:8000/")
+    uvicorn.run(app, host="127.0.0.1", port=8000)

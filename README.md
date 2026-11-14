@@ -6,7 +6,7 @@ A fast rules path decides the obvious payouts. A slow, checked AI path looks at 
 
 ## Status
 
-**Phases 0 to 5 are built and wired together:** the synthetic data, the rules-only hot path, the payout service with its hold lifecycle and append-only ledger, the agent, the verifier and policy wrapper, and an evaluation harness. **No real model has been run yet.** The evaluation so far used a scripted stand-in, so it checks the pipeline and the guard, not how good a model is. Read [docs/results-memo.md](docs/results-memo.md) first. The ops UI is not built. See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
+**Phases 0 to 6 are built and wired together:** the synthetic data, the rules-only hot path, the payout service with its hold lifecycle and append-only ledger, the agent, the verifier and policy wrapper, and an evaluation harness. **No real model has been run yet.** The evaluation so far used a scripted stand-in, so it checks the pipeline and the guard, not how good a model is. Read [docs/results-memo.md](docs/results-memo.md) first. A read-only ops screen is built (`make serve`, then open http://127.0.0.1:8000/). See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
 
 Try the rules-only replay (Python 3.12, `pip install -e ".[dev]"`):
 

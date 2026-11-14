@@ -105,6 +105,13 @@ One entry per decision: what, why, status. Newest last. "Open" items are decisio
 **Why:** The pipeline and the guard can be tested for free and repeatably. Real-model numbers cost money and are the user's call.
 **Status:** decided. Real-model results are still to come.
 
+## D-023 The ops screen is one plain HTML page, read-only
+**Decision:** The ops UI is a single static page (`service/static/ops.html`, vanilla JavaScript, no build step) served by the same FastAPI app at `/`. It lists payouts, shows why each was decided (rule reasons, evidence trace, the ledger timeline) and plays demo cases through the real service. It has no approve, block or release button. Merchant-typed text (memo, payee name) is inserted with `textContent` only and labelled untrusted.
+**Why:** The plan said React + Vite; that adds a Node toolchain and a build the reader must understand before they can follow the story. One file they can read top to bottom fits the goal that the code is easy to explain. A human decision button needs a login and an audit identity first; building it without them would be a hole in the ledger's story.
+**Not built:** a threshold sandbox, a KPI dashboard (the numbers live in `docs/eval-results.md`), a tool-call timeline (tool calls are not stored in the ledger yet) and a live stream push (the page polls every 3 s).
+**Demo cases:** one story per fraud kind, chosen by a rules-only replay so each shows the system acting, plus one miss (fraud the rules approved) and one ordinary payout. Playing a case twice is a replay by idempotency key.
+**Status:** decided.
+
 ## O-002 Which false-positive definition the client manages to
 Held payouts counted or not (KPI 3 and 4). **Open until a real client answers.**
 

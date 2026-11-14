@@ -170,6 +170,30 @@ class PayoutService:
             raise PayoutNotFound(payout_id)
         return Payout.model_validate_json(row[0])
 
+    def list_payouts(self, state: str | None = None, limit: int = 50) -> list[dict]:
+        """Newest first, for the ops screen. Plain dicts: this is a display read, not a decision input."""
+        sql = ("SELECT p.payout_id, p.state, p.merchant_id, p.amount_usd, p.created_at, p.response, m.legal_name"
+               " FROM payouts p LEFT JOIN merchants m ON m.merchant_id = p.merchant_id")
+        args: list = []
+        if state:
+            sql += " WHERE p.state=?"
+            args.append(state)
+        sql += " ORDER BY p.rowid DESC LIMIT ?"
+        args.append(limit)
+        with self._lock:
+            rows = self._conn.execute(sql, args).fetchall()
+        out = []
+        for pid, st, mid, amount, created, resp, name in rows:
+            r = PayoutResponse.model_validate_json(resp)
+            out.append({"payout_id": pid, "state": st, "route": r.route.value, "merchant_id": mid,
+                        "merchant_name": name, "amount_usd": amount, "created_at": created,
+                        "score": r.score, "reason_codes": r.reason_codes})
+        return out
+
+    def counts_by_state(self) -> dict[str, int]:
+        with self._lock:
+            return dict(self._conn.execute("SELECT state, COUNT(*) FROM payouts GROUP BY state").fetchall())
+
     def merchant_is_top_200(self, merchant_id: str) -> bool:
         with self._lock:
             return self._lookup.merchant_stats(merchant_id)[2]

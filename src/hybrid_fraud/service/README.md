@@ -7,6 +7,7 @@ The payout endpoint and the logic behind it.
 | `payout_service.py` | `submit` (idempotent), `resolve` (apply a policy decision to a hold), `reap` (escalate expired holds), `recover` (rebuild after a restart) |
 | `gray_zone.py` | `GrayZoneProcessor`: a held payout goes agent, verifier, policy wrapper, then `resolve`. Any failure ends in ESCALATED |
 | `api.py` | FastAPI routes: `POST /api/payouts`, `GET /api/payouts/{id}`, `GET /api/payouts/{id}/ledger`, `GET /health` |
+| `ops_api.py` + `static/ops.html` | The read-only ops screen at `/`: payout list, case view with ledger timeline, demo cases. No decision buttons (D-023) |
 | `main.py` | Runs it locally and fills an empty database from the committed snapshot |
 
 ```bash
@@ -18,4 +19,4 @@ python -m hybrid_fraud.eval.latency      # 50,000-event latency run
 
 A held payout is handed to the gray-zone processor after the response goes out, so the hot path never waits for a model. With no API key and no recordings the processor fails safe: the payout goes to the human queue. If the hold deadline passes while the agent is working, the reaper's escalation stands.
 
-*Built in Phase 2.*
+*Built in Phases 2 and 6.*

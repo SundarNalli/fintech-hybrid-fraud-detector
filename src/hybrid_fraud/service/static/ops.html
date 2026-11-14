@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraud ops (synthetic data)</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --mute:#68707a; --line:#e2e5e9;
+          --ok:#1a7f4b; --bad:#b3261e; --warn:#a15c00; --info:#2457c5; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#14171a; --card:#1d2125; --ink:#e8eaed; --mute:#9aa3ad; --line:#2d333a;
+            --ok:#4cc38a; --bad:#ff7b72; --warn:#e3b341; --info:#79a6ff; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
+  header { padding:14px 16px; display:flex; flex-wrap:wrap; gap:12px; align-items:baseline; border-bottom:1px solid var(--line); }
+  h1 { font-size:17px; margin:0; } h2 { font-size:14px; margin:0 0 8px; }
+  .mute { color:var(--mute); } .tag { border:1px solid var(--line); border-radius:99px; padding:1px 8px; font-size:12px; }
+  main { display:grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); gap:12px; padding:12px 16px; }
+  @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; }
+  .stats { display:flex; flex-wrap:wrap; gap:8px; }
+  .stat { flex:1 1 90px; border:1px solid var(--line); border-radius:6px; padding:6px 10px; }
+  .stat b { display:block; font-size:20px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tr.row { cursor:pointer; } tr.row:hover { background:var(--bg); } tr.sel { outline:2px solid var(--info); }
+  .APPROVED { color:var(--ok); } .BLOCKED { color:var(--bad); } .ESCALATED { color:var(--warn); } .PENDING_REVIEW { color:var(--info); }
+  button { font:inherit; padding:5px 10px; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:6px; cursor:pointer; }
+  button:hover { border-color:var(--info); }
+  .untrusted { border-left:3px solid var(--warn); padding:4px 8px; background:var(--bg); white-space:pre-wrap; }
+  ol.timeline { padding-left:18px; margin:6px 0; } ol.timeline li { margin-bottom:8px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size:12.5px; }
+  .tabs button.on { border-color:var(--info); }
+  .bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fraud ops</h1>
+  <span class="tag">synthetic data only</span>
+  <span class="tag" id="mode"></span>
+  <span class="tag" id="chain"></span>
+  <span class="mute">The AI advises. A plain program decides. This screen can only look.</span>
+</header>
+<main>
+  <section>
+    <div class="card"><div class="stats" id="stats"></div></div>
+    <div class="card" style="margin-top:12px">
+      <h2>Payouts</h2>
+      <div class="bar tabs" id="tabs"></div>
+      <table><thead><tr><th>Payout</th><th>Merchant</th><th class="num">USD</th><th>State</th><th>Score</th></tr></thead>
+        <tbody id="rows"></tbody></table>
+      <p class="mute" id="empty" hidden>No payouts yet. Play a demo case on the right.</p>
+    </div>
+  </section>
+  <section>
+    <div class="card">
+      <h2>Demo cases</h2>
+      <p class="mute">Each plays a short story from the synthetic data through the real service.</p>
+      <div id="cases"></div>
+    </div>
+    <div class="card" style="margin-top:12px" id="case">
+      <h2>Case</h2><p class="mute">Pick a payout to see why it was decided.</p>
+    </div>
+  </section>
+</main>
+<script>
+// Every value from the server goes in with textContent, never innerHTML:
+// the payout memo and payee name are typed by merchants and may hold an attack.
+const $ = (id) => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => {
+  const e = Object.assign(document.createElement(tag), props);
+  kids.flat().forEach(k => e.append(k));
+  return e;
+};
+const api = (path, opts) => fetch(path, opts).then(r => r.ok ? r.json() : Promise.reject(r.status));
+const money = (n) => "$" + Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+const when = (s) => new Date(s * 1000).toLocaleString();
+
+let filter = "", selected = null;
+const STATES = ["", "PENDING_REVIEW", "ESCALATED", "BLOCKED", "APPROVED"];
+
+async function refresh() {
+  try {
+    const [sum, rows] = await Promise.all([api("/api/ops/summary"), api("/api/ops/payouts?limit=60" + (filter ? "&state=" + filter : ""))]);
+    $("mode").textContent = sum.mode === "live" ? "live model" : "replay mode (no live model)";
+    $("chain").textContent = sum.ledger_ok ? "ledger chain intact" : "LEDGER CHAIN BROKEN at row " + sum.first_bad_seq;
+    $("chain").style.color = sum.ledger_ok ? "var(--ok)" : "var(--bad)";
+    $("stats").replaceChildren(...["APPROVED", "BLOCKED", "ESCALATED", "PENDING_REVIEW"].map(s =>
+      el("div", { className: "stat" }, el("span", { className: "mute", textContent: s.replace("_", " ").toLowerCase() }),
+         el("b", { className: s, textContent: sum.counts[s] || 0 }))));
+    $("tabs").replaceChildren(...STATES.map(s => el("button", {
+      textContent: s ? s.replace("_", " ").toLowerCase() : "all", className: s === filter ? "on" : "",
+      onclick: () => { filter = s; refresh(); } })));
+    $("empty").hidden = rows.length > 0;
+    $("rows").replaceChildren(...rows.map(r => el("tr", {
+      className: "row" + (r.payout_id === selected ? " sel" : ""), onclick: () => openCase(r.payout_id) },
+      el("td", {}, el("code", { textContent: r.payout_id })),
+      el("td", { textContent: r.merchant_name || r.merchant_id }),
+      el("td", { textContent: money(r.amount_usd) }),
+      el("td", { className: r.state, textContent: r.state.replace("_", " ").toLowerCase() }),
+      el("td", { textContent: r.score.toFixed(2) }))));
+  } catch (e) { $("chain").textContent = "cannot reach the service"; }
+}
+
+async function openCase(id) {
+  selected = id;
+  const c = await api("/api/ops/payouts/" + encodeURIComponent(id));
+  const p = c.payout, d = c.decision;
+  const box = $("case");
+  box.replaceChildren(
+    el("h2", { textContent: "Case " + id }),
+    el("p", {}, el("b", { className: c.state, textContent: c.state.replace("_", " ").toLowerCase() }),
+       " · " + money(p.amount_usd) + " · " + p.rail + " · first decision: " + d.route + " (score " + d.score.toFixed(2) + ")"),
+    el("p", { className: "mute", textContent: "Typed by the merchant. Shown here, never obeyed:" }),
+    el("div", { className: "untrusted", textContent: "payee: " + p.beneficiary_name + "\nmemo: " + p.payout_memo }),
+    el("h2", { textContent: "Why (rules)", style: "margin-top:12px" }),
+    el("p", {}, d.reason_codes.map(rc => el("span", { className: "tag", textContent: rc, style: "margin-right:4px" }))),
+    el("ul", {}, d.evidence_trace.map(t => el("li", { textContent: t }))),
+    el("h2", { textContent: "Timeline (append-only ledger)" }),
+    el("ol", { className: "timeline" }, c.ledger.map(r => el("li", {},
+      el("b", { className: r.to_state, textContent: (r.from_state || "start") + " → " + r.to_state }),
+      el("span", { className: "mute", textContent: "  by " + r.decided_by + " · " + when(r.at) }),
+      r.reason_codes.length ? el("div", {}, r.reason_codes.map(x => el("span", { className: "tag", textContent: x, style: "margin-right:4px" }))) : "",
+      r.policy_note ? el("div", { textContent: "policy: " + r.policy_note }) : "",
+      r.evidence_trace.length ? el("div", { className: "mute", textContent: r.evidence_trace.join(" · ") }) : ""))),
+    el("p", { className: "mute", textContent: c.chain_ok ? "Ledger hash chain verified." : "LEDGER CHAIN BROKEN." }),
+    c.answer_key ? el("p", { className: "mute", textContent: "Answer key (the service never sees this): " +
+      (c.answer_key.is_fraud ? "fraud, " + c.answer_key.fraud_type : "legitimate") }) : "");
+  refresh();
+}
+
+async function loadCases() {
+  const cases = await api("/api/ops/cases");
+  $("cases").replaceChildren(...cases.map(c => el("div", { style: "margin-bottom:6px" },
+    el("button", { textContent: "Play", onclick: async (ev) => {
+      ev.target.disabled = true;
+      try { const r = await api("/api/ops/cases/" + c.id + "/play", { method: "POST" });
+            await refresh(); openCase(r.submitted[r.submitted.length - 1].payout_id); }
+      finally { ev.target.disabled = false; } } }),
+    " " + c.title, el("span", { className: "mute", textContent: "  (" + c.payouts + " payouts)" }))));
+}
+
+loadCases(); refresh(); setInterval(() => { refresh(); if (selected) openCase(selected); }, 3000);
+</script>
+</body>
+</html>
