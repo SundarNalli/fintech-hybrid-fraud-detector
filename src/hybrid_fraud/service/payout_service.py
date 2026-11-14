@@ -162,6 +162,18 @@ class PayoutService:
         return PayoutStatus(payout_id=payout_id, state=PayoutState(row[0]),
                             decision=PayoutResponse.model_validate_json(row[1]))
 
+    def payout(self, payout_id: str) -> Payout:
+        """The payout exactly as it was submitted."""
+        with self._lock:
+            row = self._conn.execute("SELECT payload FROM payouts WHERE payout_id=?", (payout_id,)).fetchone()
+        if row is None:
+            raise PayoutNotFound(payout_id)
+        return Payout.model_validate_json(row[0])
+
+    def merchant_is_top_200(self, merchant_id: str) -> bool:
+        with self._lock:
+            return self._lookup.merchant_stats(merchant_id)[2]
+
     def ledger_rows(self, payout_id: str) -> list[LedgerRow]:
         with self._lock:
             return self._ledger.rows_for(payout_id)

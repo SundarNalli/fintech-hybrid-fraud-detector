@@ -33,15 +33,15 @@ def test_a_claim_about_a_missing_field_counts_as_false():
 
 
 def test_approve_is_contradicted_by_a_recent_2fa_ticket():
-    records = [profile(), graph(), tickets(twofa_ticket_last_48h=True)]
+    records = [profile(), graph(), tickets(has_2fa_ticket_48h=True)]
     with pytest.raises(VerificationError) as e:
         run_verify(APPROVE, GOOD_APPROVE_CLAIMS, records)
     assert "contradicts hard fact" in e.value.failures[0]
 
 
 def test_block_is_not_contradicted_by_a_2fa_ticket():
-    records = [tickets(twofa_ticket_last_48h=True)]
-    claims = [claim("support_tickets:m1", "twofa_ticket_last_48h", "eq", True, "hard_signal")]
+    records = [tickets(has_2fa_ticket_48h=True)]
+    claims = [claim("support_tickets:m1", "has_2fa_ticket_48h", "eq", True, "hard_signal")]
     assert run_verify(BLOCK, claims, records).action == BLOCK
 
 

@@ -2,9 +2,6 @@
 
 from datetime import datetime, timezone
 
-import pytest
-
-from hybrid_fraud.core.config import load_thresholds
 from hybrid_fraud.core.schemas import (
     AgentAction,
     Claim,
@@ -18,11 +15,6 @@ from hybrid_fraud.guard.verifier import verify
 APPROVE = AgentAction.APPROVE
 BLOCK = AgentAction.BLOCK
 ESCALATE = AgentAction.ESCALATE_HUMAN
-
-
-@pytest.fixture
-def thresholds():
-    return load_thresholds()
 
 
 def make_payout(amount: float = 500.0) -> Payout:
@@ -42,7 +34,7 @@ def profile(**extra) -> EvidenceRecord:
 
 
 def graph(**extra) -> EvidenceRecord:
-    fields = {"graph_clean": True, "shared_device_count": 0, **extra}
+    fields = {"graph_clean": True, "shared_device_merchants": 1, **extra}
     return EvidenceRecord(evidence_id="entity_graph:m1", source="entity_graph", fields=fields)
 
 
@@ -59,7 +51,7 @@ def claim(evidence_id, field, op, value, kind="positive") -> Claim:
 
 GOOD_APPROVE_CLAIMS = [
     claim("merchant_profile:m1", "account_age_days", "gte", 365),
-    claim("entity_graph:m1", "shared_device_count", "eq", 0),
+    claim("entity_graph:m1", "shared_device_merchants", "eq", 1),
 ]
 
 

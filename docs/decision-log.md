@@ -87,6 +87,24 @@ One entry per decision: what, why, status. Newest last. "Open" items are decisio
 **Decision:** `SQLiteReadOnlyRepository(db, as_of)` opens SQLite with `mode=ro` and only shows what was known at `as_of`. The graph links merchants through shared devices and through payees created within the last 168 hours (older payees are shared vendors such as a cloud provider, and would link everyone). `graph_clean` means no mule-flagged neighbours and fewer than 3 merchants on a device.
 **Status:** decided. The 168 hours and the `graph_clean` definition are INVENTED (A-35).
 
+## D-019 The gray-zone path is wired into the service (14 Nov 2026)
+**Decision:** `GrayZoneProcessor` takes a held payout through agent, verifier and policy wrapper, then calls `service.resolve`. Over HTTP it runs as a background task after the response, so the hot path never waits for a model. Any failure at any step (provider error, timeout, malformed output, rejected verification) ends in ESCALATED. If the hold expired while the agent was thinking, the reaper's decision stands and is not overwritten.
+**Status:** decided.
+
+## D-020 Hard-fact field names must be the repository's field names (14 Nov 2026)
+**Decision:** The guard's hard facts use `has_2fa_ticket_48h`, `has_credential_ticket_48h`, `on_mule_list` and `mule_flagged_neighbors`. A test checks every hard-fact field against what the real repository returns.
+**Why:** The two sides had drifted apart, so no hard fact could ever fire on real evidence, and each side's own tests still passed. Tests that use hand-made records cannot catch this.
+**Status:** decided and fixed.
+
+## D-021 One fence function (14 Nov 2026)
+**Decision:** The agent's prompt uses `guard.injection_hygiene.wrap_untrusted`, so the repo has one delimiter format, `<<<UNTRUSTED_DATA label>>>` to `<<<END_UNTRUSTED_DATA label>>>`.
+**Status:** decided.
+
+## D-022 The evaluation runs a scripted stand-in until a real model is run (14 Nov 2026)
+**Decision:** `eval/run.py` supports `scripted`, `replay` and `live` providers. The scripted one is a fixed rule, not a model, and every report that uses it says so. A live run needs `--confirm`, model prices (so spend can be metered) and a dollar cap.
+**Why:** The pipeline and the guard can be tested for free and repeatably. Real-model numbers cost money and are the user's call.
+**Status:** decided. Real-model results are still to come.
+
 ## O-002 Which false-positive definition the client manages to
 Held payouts counted or not (KPI 3 and 4). **Open until a real client answers.**
 

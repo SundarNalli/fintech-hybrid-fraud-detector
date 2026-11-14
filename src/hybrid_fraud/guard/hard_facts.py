@@ -24,10 +24,10 @@ class HardFact:
 _NO_APPROVE = frozenset({AgentAction.APPROVE})
 
 DEFAULT_HARD_FACTS: tuple[HardFact, ...] = (
-    HardFact("2fa_ticket_last_48h", "twofa_ticket_last_48h", "eq", True, _NO_APPROVE),
-    HardFact("credential_ticket", "credential_ticket_open", "eq", True, _NO_APPROVE),
-    HardFact("beneficiary_on_mule_list", "beneficiary_on_mule_list", "eq", True, _NO_APPROVE),
-    HardFact("mule_flagged_neighbours", "mule_flagged_neighbours", "gt", 0, _NO_APPROVE),
+    HardFact("2fa_ticket_last_48h", "has_2fa_ticket_48h", "eq", True, _NO_APPROVE),
+    HardFact("credential_ticket", "has_credential_ticket_48h", "eq", True, _NO_APPROVE),
+    HardFact("beneficiary_on_mule_list", "on_mule_list", "eq", True, _NO_APPROVE),
+    HardFact("mule_flagged_neighbours", "mule_flagged_neighbors", "gt", 0, _NO_APPROVE),
 )
 
 

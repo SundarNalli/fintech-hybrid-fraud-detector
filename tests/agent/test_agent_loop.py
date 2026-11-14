@@ -93,7 +93,7 @@ def test_a_cited_nonexistent_evidence_id_is_passed_through_for_the_guard_to_reje
 def test_injected_text_is_fenced_in_every_message_and_marked_merchant_authored():
     result = run("p_injected", payout={"memo": INJECTION})
     sent = "\n".join(str(m["content"]) for m in result.messages)
-    assert "<<<UNTRUSTED payout_memo>>>" in sent and "<<<UNTRUSTED kyb_text>>>" in sent
+    assert "<<<UNTRUSTED_DATA payout_memo>>>" in sent and "<<<UNTRUSTED_DATA kyb_text>>>" in sent
     assert ">>> END" not in sent  # the attacker's own fence marker was neutralised
     assert "kyb_text" in result.evidence[0].merchant_authored
 

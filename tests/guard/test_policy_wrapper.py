@@ -53,7 +53,7 @@ def test_approve_is_downgraded_when_the_graph_is_not_clean(thresholds):
 
 
 def test_approve_is_downgraded_by_a_2fa_ticket_even_if_the_verifier_were_bypassed(thresholds):
-    records = [profile(), graph(), tickets(twofa_ticket_last_48h=True)]
+    records = [profile(), graph(), tickets(has_2fa_ticket_48h=True)]
     v = _approve(records, hard_facts=())  # no hard facts: the verifier lets it through
     d = decide(v, make_payout(), thresholds, False)
     assert d.state == PayoutState.ESCALATED and rc.APPROVE_TICKET_PRESENT in d.reason_codes
@@ -61,7 +61,7 @@ def test_approve_is_downgraded_by_a_2fa_ticket_even_if_the_verifier_were_bypasse
 
 def _block(with_hard_signal: bool):
     kind = "hard_signal" if with_hard_signal else "positive"
-    claims = [claim("entity_graph:m1", "shared_device_count", "eq", 0, kind)]
+    claims = [claim("entity_graph:m1", "shared_device_merchants", "eq", 1, kind)]
     return run_verify(BLOCK, claims, [graph()])
 
 

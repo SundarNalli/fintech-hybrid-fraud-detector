@@ -50,4 +50,8 @@ Every number carries a tag:
 | A-35 | Graph definition for the agent | links via device, or payee created within 168 h; `graph_clean` = no flagged neighbours and under 3 merchants per device | INVENTED | D-018 |
 | A-36 | Hot-path latency on this machine | p99 about 4 ms in-process, 50,000 events | DERIVED | See `docs/latency-results.md`. A floor, not a forecast |
 
+| A-37 | The 82 held payouts used as the labelled gray-zone case set | the generator's own held payouts | INVENTED | Not analyst-labelled, and not drafted by a different model as the plan intended. Templated text, labels from the same code that made the data |
+| A-38 | Scripted stand-in's rule | blocks on any hard signal, approves an established payee with a clean graph, else escalates | INVENTED | Not a model. Treating any 2FA ticket as a block is its own choice and blocks 4 legitimate merchants |
+| A-39 | Loss on paid-out dollars after the rules, in the synthetic world | 4.9 bps | DERIVED | Already below the 15 bps target, so this world cannot argue for the agent on loss grounds |
+
 Rows move from INVENTED to evidence as phases finish. When a value changes, add a line to the decision log.
