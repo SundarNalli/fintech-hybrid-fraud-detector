@@ -1,0 +1,31 @@
+# Every value says where it came from:
+#   BRIEF    stated in the client brief
+#   DESIGN   chosen in the build plan
+#   INVENTED placeholder, to be replaced by evidence (see docs/assumptions-register.md)
+# Routing rules are first-match-wins and exhaustive; see docs/decision-log.md D-009.
+
+[gate1]
+approve_below = 0.45              # BRIEF
+block_at_or_above = 0.82          # BRIEF
+novel_anomaly_hold_over_usd = 2500  # BRIEF
+
+[routing]
+top_merchant_count = 200          # BRIEF (the "top-200" merchants go to the fast human lane)
+
+[agent]
+max_tool_calls = 4                # DESIGN
+timeout_seconds = 8               # BRIEF (gray-zone limit)
+max_usd_per_case = 0.03           # BRIEF
+temperature = 0                   # DESIGN
+ai_approval_cap_usd = 1000        # INVENTED
+
+[holds]
+deadline_seconds = 10             # INVENTED (agent timeout of 8 s plus 2 s for verifier and policy)
+
+[human_queue]
+escalated_response_minutes = 15   # INVENTED
+fast_lane_response_minutes = 5    # INVENTED
+
+[latency_targets]
+hot_path_p99_ms = 150             # BRIEF
+gray_zone_p95_seconds = 6         # BRIEF
