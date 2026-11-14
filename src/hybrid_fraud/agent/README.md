@@ -16,7 +16,7 @@ The slow path for held payouts. The agent only recommends; the guard verifies an
 - Claims are not checked here. The guard checks them against `AgentResult.evidence`.
 
 ## Running without a key (D-005)
-Set `LLM_API_KEY` (plus optionally `LLM_MODEL`, `LLM_BASE_URL`) in the environment to call a real model. With no key, `make_provider` returns the replay provider, which reads `<fixture_dir>/<case_id>.json`. The key is a `SecretStr` and is never printed or logged.
+Set `OPENROUTER_API_KEY` (or `LLM_API_KEY` for another provider; plus optionally `LLM_MODEL`, `LLM_BASE_URL`) in the environment to call a real model. With no key, `make_provider` returns the replay provider, which reads `<fixture_dir>/<case_id>.json`. The key is a `SecretStr` and is never printed or logged.
 
 ## After merge
 `prompt.wrap_untrusted` is a minimal stand-in for `guard.injection_hygiene`. Swap it once the guard folder lands, so there is one delimiter function in the repo.

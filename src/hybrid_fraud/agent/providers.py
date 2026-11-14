@@ -112,7 +112,8 @@ class OpenAICompatibleProvider:
 def make_provider(fixture_dir: Path, env: dict[str, str] | None = None) -> LlmProvider:
     """Real provider only if a key is in the environment; otherwise replay."""
     env = os.environ if env is None else env
-    key = env.get("LLM_API_KEY", "").strip()
+    # OPENROUTER_API_KEY is the name in .env.example; LLM_API_KEY serves any other provider.
+    key = (env.get("OPENROUTER_API_KEY") or env.get("LLM_API_KEY") or "").strip()
     if not key:
         return ReplayProvider(fixture_dir)
     return OpenAICompatibleProvider(

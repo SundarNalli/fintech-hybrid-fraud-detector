@@ -109,6 +109,7 @@ def test_no_key_falls_back_to_replay():
     assert isinstance(make_provider(FIXTURES, env={}), ReplayProvider)
     assert isinstance(make_provider(FIXTURES, env={"LLM_API_KEY": "  "}), ReplayProvider)
     assert isinstance(make_provider(FIXTURES, env={"LLM_API_KEY": "k"}), OpenAICompatibleProvider)
+    assert isinstance(make_provider(FIXTURES, env={"OPENROUTER_API_KEY": "k"}), OpenAICompatibleProvider)
 
 
 def test_the_key_never_appears_in_repr_or_logs(caplog):

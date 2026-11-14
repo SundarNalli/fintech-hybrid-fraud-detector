@@ -1,9 +1,9 @@
 import itertools
 
-from conftest import make_features
 from hybrid_fraud.core.reason_codes import ReasonCode
 from hybrid_fraud.core.schemas import Route
 from hybrid_fraud.hot_path.router import route
+from tests.helpers import make_features
 
 # Features that land in each score band without tripping a hard rule.
 GRAY = dict(account_age_days=25, beneficiary_age_hrs=3.0, avg_daily_volume_30d=5000)  # 0.30 + 0.25

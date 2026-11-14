@@ -49,7 +49,7 @@ def test_first_time_payee_is_true_only_for_a_new_merchant_payee_pair():
 
 def test_ten_payouts_of_2400_dollars_are_stopped_by_the_third(thresholds):
     """The $2,500 loophole: no single payout is large, but the hour adds up."""
-    from conftest import make_features
+    from tests.helpers import make_features
 
     c = VelocityCounters()
     stopped_at = None
