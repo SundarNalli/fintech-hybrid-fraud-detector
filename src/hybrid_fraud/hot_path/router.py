@@ -54,16 +54,24 @@ def route(f: PayoutFeatures, t: Thresholds) -> HotPathResult:
             return result(Route.FAST_HUMAN_LANE, [ReasonCode.TOP_MERCHANT_FAST_LANE, *codes], lines)
         return result(Route.BLOCK, codes, lines)
 
-    if s >= t.gate1.block_at_or_above:
-        if f.is_top_200:
-            return result(Route.FAST_HUMAN_LANE, [ReasonCode.TOP_MERCHANT_FAST_LANE, ReasonCode.HIGH_RISK_SCORE], score_lines)
-        return result(Route.BLOCK, [ReasonCode.HIGH_RISK_SCORE], score_lines)
+    # Every score-based decision says where the score sits against the lines, so a score of zero
+    # (nothing fired) still leaves a readable reason.
+    a, b = t.gate1.approve_below, t.gate1.block_at_or_above
 
-    if s >= t.gate1.approve_below:
-        return result(Route.PENDING_REVIEW, [ReasonCode.GRAY_ZONE_SCORE], score_lines)
+    if s >= b:
+        lines = [f"score {s:.2f} is at or above the block line {b}", *score_lines]
+        if f.is_top_200:
+            return result(Route.FAST_HUMAN_LANE, [ReasonCode.TOP_MERCHANT_FAST_LANE, ReasonCode.HIGH_RISK_SCORE], lines)
+        return result(Route.BLOCK, [ReasonCode.HIGH_RISK_SCORE], lines)
+
+    if s >= a:
+        return result(Route.PENDING_REVIEW, [ReasonCode.GRAY_ZONE_SCORE],
+                      [f"score {s:.2f} is in the gray band {a} to {b}", *score_lines])
 
     if novel and f.amount_usd > t.gate1.novel_anomaly_hold_over_usd:
-        lines = [f"payee first seen {f.beneficiary_platform_age_hrs:.0f} h ago, amount ${f.amount_usd:,.2f}", *score_lines]
+        lines = [f"score {s:.2f} is below {a}, but the payee was first seen {f.beneficiary_platform_age_hrs:.0f} h ago "
+                 f"and the amount is ${f.amount_usd:,.2f}", *score_lines]
         return result(Route.PENDING_REVIEW, [ReasonCode.NOVEL_ANOMALY_LARGE], lines)
 
-    return result(Route.APPROVE, [ReasonCode.LOW_RISK_SCORE], score_lines, flag=novel)
+    return result(Route.APPROVE, [ReasonCode.LOW_RISK_SCORE],
+                  [f"score {s:.2f} is below the approval line {a}", *score_lines], flag=novel)

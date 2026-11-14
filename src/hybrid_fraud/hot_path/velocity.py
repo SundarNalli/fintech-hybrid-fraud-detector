@@ -62,6 +62,13 @@ class VelocityCounters:
         )
         self._seen_pairs.add((payout.merchant_id, payout.beneficiary_id))
 
+    def restore(self, recent: list[Payout], seen_pairs: set[tuple[str, str]]) -> None:
+        """Rebuild after a restart. `recent` is the last 24 hours, in time order;
+        `seen_pairs` is every (merchant, payee) pair ever paid."""
+        for p in recent:
+            self.record(p)
+        self._seen_pairs |= seen_pairs
+
     @staticmethod
     def _window(events: deque, now: datetime, width: timedelta) -> list:
         while events and events[0][0] <= now - DAY:  # nothing older than 24 h is ever needed

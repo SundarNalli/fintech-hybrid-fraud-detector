@@ -68,6 +68,25 @@ One entry per decision: what, why, status. Newest last. "Open" items are decisio
 **Why:** Fixes the earlier proof of concept's known artifacts. Results are properties of this generator, not of the world.
 **Status:** decided.
 
+## D-015 The service: one lock, one transaction per decision (14 Nov 2026)
+**Decision:** `PayoutService.submit` takes an `Idempotency-Key`. A repeated key with the same body returns the stored decision and writes nothing; a different body, or a reused `payout_id`, is a 409. A new payout is decided and its payout row and ledger rows commit in one SQLite transaction, so they exist together or not at all. One lock serialises writers.
+**Why:** Simple to explain and to test. The cost is that throughput is bounded by one writer; the latency numbers include that.
+**Status:** decided.
+
+## D-016 Holds are escalated by a reaper that survives restarts (14 Nov 2026)
+**Decision:** A held payout (PENDING_REVIEW) stores a deadline (10 s, INVENTED, A-20). `reap()` moves any hold past its deadline to ESCALATED, reason `HOLD_DEADLINE_EXPIRED`, decided by "timeout". It runs every second while the API is up and once on every startup. Hold state and the ledger live in SQLite; velocity counters are rebuilt from stored payouts on startup.
+**Why:** A crash must never leave a payout waiting forever.
+**Status:** decided. Refines D-003: the counters are in memory, and the durable record is the payouts table, not a separate write-behind.
+
+## D-017 The ledger is tamper-evident, not tamper-proof (14 Nov 2026)
+**Decision:** Triggers reject UPDATE and DELETE; each row hashes its content with the previous row's hash. Forward-only state moves are checked where the rows are written.
+**Why:** Cheap, testable and easy to explain. A hash chain cannot detect rows cut off the end; copying the head hash elsewhere would, in a real deployment.
+**Status:** decided.
+
+## D-018 The agent's repository is bound to a moment (14 Nov 2026)
+**Decision:** `SQLiteReadOnlyRepository(db, as_of)` opens SQLite with `mode=ro` and only shows what was known at `as_of`. The graph links merchants through shared devices and through payees created within the last 168 hours (older payees are shared vendors such as a cloud provider, and would link everyone). `graph_clean` means no mule-flagged neighbours and fewer than 3 merchants on a device.
+**Status:** decided. The 168 hours and the `graph_clean` definition are INVENTED (A-35).
+
 ## O-002 Which false-positive definition the client manages to
 Held payouts counted or not (KPI 3 and 4). **Open until a real client answers.**
 

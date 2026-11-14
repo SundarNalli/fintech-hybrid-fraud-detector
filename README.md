@@ -6,7 +6,7 @@ A fast rules path decides the obvious payouts. A slow, checked AI path looks at 
 
 ## Status
 
-**Phases 0 and 1 are done:** decisions and assumptions, the synthetic data, and the rules-only hot path with routing. The service, agent, verifier, evaluation and UI are not built yet. See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
+**Phases 0, 1 and 2 are done**, and the agent (Phase 3) and verifier and policy wrapper (Phase 4) are built and tested separately: decisions and assumptions, the synthetic data, the rules-only hot path, the payout service with its hold lifecycle and append-only ledger, and the latency harness. The pieces are not wired together yet, and the evaluation and UI are not built. See [docs/problem-restated.md](docs/problem-restated.md) for the problem in one page.
 
 Try the rules-only replay (Python 3.12, `pip install -e ".[dev]"`):
 
@@ -40,6 +40,8 @@ payout event --> HOT PATH (rules, target p99 < 150 ms)
 | `src/hybrid_fraud/agent/` | Tools, the agent loop, budget meter, LLM providers |
 | `src/hybrid_fraud/guard/` | Verifier and policy wrapper |
 | `src/hybrid_fraud/audit/` | Append-only ledger, evidence traces |
+| `src/hybrid_fraud/store/` | SQLite: loading, lookups, the agent's read-only view |
+| `src/hybrid_fraud/service/` | The payout endpoint, idempotency, hold lifecycle and reaper |
 | `src/hybrid_fraud/sim/` | Synthetic data generator and scenario fixtures |
 | `src/hybrid_fraud/eval/` | Evaluation harness and KPI report |
 | `config/` | Thresholds, every value tagged with where it came from |

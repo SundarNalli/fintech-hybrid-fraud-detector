@@ -1,4 +1,24 @@
+from hybrid_fraud.core.schemas import Route
 from hybrid_fraud.hot_path.features import PayoutFeatures
+
+
+class Clock:
+    """A clock the test controls."""
+
+    def __init__(self, t: float = 1_800_000_000.0):
+        self.t = t
+
+    def __call__(self) -> float:
+        return self.t
+
+
+def submit_until(service, dataset, replayed, wanted: Route):
+    """Feed payouts in order until one lands on `wanted`. Returns (that payout, its response, its index)."""
+    first = next(i for i, r in enumerate(replayed) if r.result.route == wanted)
+    for p in dataset.payouts[:first]:
+        service.submit(p, f"key_{p.payout_id}")
+    p = dataset.payouts[first]
+    return p, service.submit(p, f"key_{p.payout_id}"), first
 
 
 def make_features(**overrides) -> PayoutFeatures:

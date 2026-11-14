@@ -47,4 +47,7 @@ Every number carries a tag:
 | A-33 | Fraud loss by dollars in the synthetic set | about 29 bps | DERIVED | Below 48 because fraud payouts here are smaller than the legitimate average. The manifest records it |
 | A-34 | Legitimate-payout friction | about 0.02% blocked, 0.2% held | DERIVED | Far below the earlier test's 1.87% blocked. A property of this generator; real friction is unknown |
 
+| A-35 | Graph definition for the agent | links via device, or payee created within 168 h; `graph_clean` = no flagged neighbours and under 3 merchants per device | INVENTED | D-018 |
+| A-36 | Hot-path latency on this machine | p99 about 4 ms in-process, 50,000 events | DERIVED | See `docs/latency-results.md`. A floor, not a forecast |
+
 Rows move from INVENTED to evidence as phases finish. When a value changes, add a line to the decision log.
