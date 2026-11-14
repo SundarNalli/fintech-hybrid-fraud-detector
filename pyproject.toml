@@ -4,7 +4,12 @@ version = "0.0.0"
 description = "Rules decide the obvious payouts; a checked AI path advises on the gray ones. Synthetic data only."
 requires-python = ">=3.12"
 # Dependencies are added phase by phase, so each one has a reason on record.
-dependencies = []
+dependencies = [
+    "pydantic>=2.6",  # typed schemas that double as documentation (D-010)
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
